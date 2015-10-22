@@ -5,10 +5,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.Source._
 
 object ParseJam extends App{
-  val FILE_NAME = "A-small-practice.in"
+  val FILE_NAME = "A-large-practice.in"
 
   //get the test groups
-  def findMatch(word: String, testStr: String): Boolean = {
+  def findMatch(wordLength: Int, word: String, testStr: String): Boolean = {
 
     //iterate over the word string, char by char
     var buff = new ArrayBuffer[Char] //mutable buffer to collect my matches
@@ -51,7 +51,7 @@ object ParseJam extends App{
 //    if (buff.length == 10)
 //      print(".")
 
-    buff.length == 10
+    buff.length == wordLength
 
   }
 
@@ -78,13 +78,16 @@ object ParseJam extends App{
         testBuffer += lineIter.next
     }
 
+    //println(testBuffer.length)
+    //println(wordsBuffer.length)
+
     var testCounter = 0
     testBuffer.foreach { test =>
       var matches = 0
       testCounter += 1
       wordsBuffer.foreach { word =>
 
-          if (findMatch(word, test))
+          if (findMatch(wordLength, word, test))
             matches += 1
       }
       println (s"Case #${testCounter}: ${matches}")
