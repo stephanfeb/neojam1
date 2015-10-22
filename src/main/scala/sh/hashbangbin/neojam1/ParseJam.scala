@@ -1,6 +1,7 @@
 package sh.hashbangbin.neojam1
 
 import scala.Char
+import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source._
 
@@ -13,43 +14,50 @@ object ParseJam extends App{
     //iterate over the word string, char by char
     var buff = new ArrayBuffer[Char] //mutable buffer to collect my matches
     val wcIter = word.iterator
+    var testCharIter = testStr iterator
 
-    while (wcIter hasNext) {
-      var testCharIter = testStr iterator
-
-      while (testCharIter hasNext) {
-
+    @tailrec def runAlong (wcIter: Iterator[Char], testCharIter: Iterator[Char]): Unit = {
         //break out if we reach end of our word iterator
-        if (! wcIter.hasNext){
-          return false
-        }
+        if (! wcIter.hasNext)
+          return
 
-        var wc = wcIter next
-        var tc = testCharIter.next
-        //wc = wcIter.next
+        if (!testCharIter.hasNext)
+          return
+
+        val wc = wcIter next
+        val tc = testCharIter.next //always longer than wcIter
+        var newIterHead = testCharIter
+
         if (tc == '('){
-           //ff to next ")"
-            do {
-              tc = testCharIter.next
-              if (tc == wc ) {
-                buff += tc
-                //ff iterator to ')'
-                testCharIter = testCharIter.dropWhile { c => c != ')'} //skip ahead
-              }
 
-            } while (tc != ')' )
+          //fast-forward over the optional letters searching for a match
+          //returns a new iterator with position on the closing ")"
+         @tailrec def evalOptionalChars(searchChar: Char, iter: Iterator[Char]): Iterator[Char] = {
+            val nextChar = iter.next
+
+            if (nextChar == ')')
+              return iter
+
+            if (nextChar == searchChar){
+              buff += nextChar
+              return iter.dropWhile{ c => c != ')' }
+            }else{
+              evalOptionalChars(searchChar, iter)
+            }
+          }
+
+          newIterHead = evalOptionalChars(wc, newIterHead)
+          if (newIterHead.hasNext)
+            newIterHead.next //discard the ')' and catch up
 
         }else if (tc == wc) {
           buff += tc
           //wc = wcIter.next
         }
 
-      }
-
+        runAlong(wcIter, newIterHead)
     }
-
-//    if (buff.length == 10)
-//      print(".")
+    runAlong(wcIter, testCharIter)
 
     buff.length == wordLength
 
