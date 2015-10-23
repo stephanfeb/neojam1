@@ -90,15 +90,15 @@ object ParseJam extends App{
     //println(wordsBuffer.length)
 
     var testCounter = 0
-    testBuffer.foreach { test =>
+    testBuffer.par.foreach { test =>
       var matches = 0
       testCounter += 1
-      wordsBuffer.foreach { word =>
+      wordsBuffer.par.foreach { word =>
 
           if (findMatch(wordLength, word, test))
             matches += 1
       }
-      println (s"Case #${testCounter}: ${matches}")
+      //println (s"Case #${testCounter}: ${matches}")
     }
 
   }
