@@ -98,7 +98,7 @@ object ParseJam extends App{
           if (findMatch(wordLength, word, test))
             matches += 1
       }
-      //println (s"Case #${testCounter}: ${matches}")
+      println (s"Case #${testCounter}: ${matches}")
     }
 
   }
